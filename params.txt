@@ -1,0 +1,6 @@
+theta0=0.9362124793084768
+theta1=-0.9953762249792935
+min_mileage=22899
+max_mileage=240000
+min_price=3650
+max_price=8290
