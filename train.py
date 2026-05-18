@@ -1,10 +1,4 @@
 import pandas as pd
-import sys
-
-def normalize(x, min_val, max_val):
-    if max_val == min_val:
-        return 0.0  
-    return (x - min_val) / (max_val - min_val)
 
 def data_prep():
     try:
@@ -39,8 +33,8 @@ def data_prep():
         raise ValueError("Invalid data: all price values are identical.")
 
     # Apply normalization
-    data['km'] = data['km'].apply(lambda x: normalize(x, min_mileage, max_mileage))
-    data['price'] = data['price'].apply(lambda x: normalize(x, min_price, max_price))
+    data['km'] = (data['km'] - min_mileage) / (max_mileage - min_mileage)
+    data['price'] = (data['price'] - min_price) / (max_price - min_price)
 
     return data, min_mileage, max_mileage, min_price, max_price
 
@@ -52,7 +46,6 @@ def trainingLoop(data):
     m = len(data)
     iterations = 1000
 
-    # OPTIMIZATION: Vectorized operations run 100x faster than data.iloc loops
     km_series = data['km']
     price_series = data['price']
 
@@ -72,20 +65,16 @@ def trainingLoop(data):
     return theta0, theta1 
 
 
-if __name__ == "__main__":
-    try:
-        data, min_mileage, max_mileage, min_price, max_price = data_prep()
-        theta0, theta1 = trainingLoop(data)
-
-        with open("params.txt", "w") as f:
-            f.write(f"theta0={theta0}\n")
-            f.write(f"theta1={theta1}\n")
-            f.write(f"min_mileage={min_mileage}\n")
-            f.write(f"max_mileage={max_mileage}\n")
-            f.write(f"min_price={min_price}\n")
-            f.write(f"max_price={max_price}\n")
-        print(f"data  {data}")
-        print("Training complete. Parameters saved successfully.")
-
-    except Exception as e:                 
-        print(f"Caught an error: {e}")
+try:
+    data, min_mileage, max_mileage, min_price, max_price = data_prep()
+    theta0, theta1 = trainingLoop(data)
+    with open("params.txt", "w") as f:
+        f.write(f"theta0={theta0}\n")
+        f.write(f"theta1={theta1}\n")
+        f.write(f"min_mileage={min_mileage}\n")
+        f.write(f"max_mileage={max_mileage}\n")
+        f.write(f"min_price={min_price}\n")
+        f.write(f"max_price={max_price}\n")
+    print("Training complete. Parameters saved successfully.")
+except Exception as e:                 
+    print(f"Caught an error: {e}")

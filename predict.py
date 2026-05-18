@@ -33,24 +33,30 @@ if __name__ == "__main__":
     try:
         user_input = input("Enter mileage: ")
         km = float(user_input)
-    except ValueError:
-        print("Please enter a valid number for mileage.")
+        if km < 0:
+            raise ValueError("Mileage cannot be negative.")
+    
+        if km < min_mileage or km > max_mileage:
+           print(f"Warning: mileage is outside the training range (min:{int(min_mileage)}km max:{int(max_mileage)}km). Prediction may be less accurate.")
+
+    except Exception as e:
+        print(f"Caught an error: {e}")
         exit()
 
 
     if max_mileage == min_mileage:
         predicted_price = theta0 + (theta1 * km)
     else:
-        # 1. Normalize KM
+        #  Normalize KM
         normalized_km = (km - min_mileage) / (max_mileage - min_mileage)
         
-        # 2. Apply Hypothesis (Math from PDF page 9)
+
         normalized_price = theta0 + (theta1 * normalized_km)
         
-        # 3. De-normalize Price
+        # De-normalize Price
         predicted_price = (normalized_price * (max_price - min_price)) + min_price
 
     if predicted_price < 0:
         predicted_price = 0.0
 
-    print(f"Predicted price: {predicted_price:.2f}")
+    print(f"Predicted price: {round(predicted_price)}")
